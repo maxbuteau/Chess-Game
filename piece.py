@@ -122,16 +122,242 @@ class Knight(Piece):
             elif board[self.row + 1][self.col - 2].color != self.color:
                 moves.append((self.row + 1, self.col - 2))
 
+        return moves
+
 
 class Bishop(Piece):
-    pass
+    def get_valid_moves(self, board):
+        moves = []
+
+        # Diagonally up right
+        row = self.row - 1
+        col = self.col + 1
+        while self.row > -1 and self.col < 8:
+            if board[row][col] is not Piece:
+                moves.append((row, col))
+            elif board[row][col].color != self.color:
+                moves.append((row, col))
+                break
+            else:
+                break
+            row -= 1
+            col += 1
+
+            # Diagonally down right
+            row = self.row + 1
+            col = self.col + 1
+            while self.row < 8 and self.col < 8:
+                if board[row][col] is not Piece:
+                    moves.append((row, col))
+                elif board[row][col].color != self.color:
+                    moves.append((row, col))
+                    break
+                else:
+                    break
+                row += 1
+                col += 1
+
+            # Diagonally down left
+            row = self.row + 1
+            col = self.col - 1
+            while self.row < 8 and self.col > -1:
+                if board[row][col] is not Piece:
+                    moves.append((row, col))
+                elif board[row][col].color != self.color:
+                    moves.append((row, col))
+                    break
+                else:
+                    break
+                row += 1
+                col -= 1
+
+            # Diagonally up left
+            row = self.row - 1
+            col = self.col + 1
+            while self.row > -1 and self.col < 8:
+                if board[row][col] is not Piece:
+                    moves.append((row, col))
+                elif board[row][col].color != self.color:
+                    moves.append((row, col))
+                    break
+                else:
+                    break
 
 
 class Queen(Piece):
-    pass
+    def get_valid_moves(self, board):
+        moves = []
+
+        # Up
+        row = self.row - 1
+        col = self.col
+        while row > -1:
+            if board[row][col] is not Piece:
+                moves.append((row, col))
+            elif board[row][col].color != self.color:
+                moves.append((row, col))
+                break
+            else:
+                break
+            row -= 1
+
+        # Diagonally up and right
+        row = self.row - 1
+        col = self.col + 1
+        while row > -1 and col < 8:
+            if board[row][col] is not Piece:
+                moves.append((row, col))
+            elif board[row][col].color != self.color:
+                moves.append((row, col))
+                break
+            else:
+                break
+            row -= 1
+            col += 1
+
+        # Right
+        row = self.row
+        col = self.col + 1
+        while col < 8:
+            if board[row][col] is not Piece:
+                moves.append((row, col))
+            elif board[row][col].color != self.color:
+                moves.append((row, col))
+                break
+            else:
+                break
+            col += 1
+
+        # Diagonally right and down
+        row = self.row + 1
+        col = self.col + 1
+        while row < 8 and col < 8:
+            if board[row][col] is not Piece:
+                moves.append((row, col))
+            elif board[row][col].color != self.color:
+                moves.append((row, col))
+                break
+            else:
+                break
+            row += 1
+            col += 1
+
+        # Down
+        row = self.row + 1
+        col = self.col
+        while row < 8:
+            if board[row][col] is not Piece:
+                moves.append((row, col))
+            elif board[row][col].color != self.color:
+                moves.append((row, col))
+                break
+            else:
+                break
+            row += 1
+
+        # Diagonally left and down
+        row = self.row + 1
+        col = self.col - 1
+        while row < 8 and col > -1:
+            if board[row][col] is not Piece:
+                moves.append((row, col))
+            elif board[row][col].color != self.color:
+                moves.append((row, col))
+                break
+            else:
+                break
+            row += 1
+            col -= 1
+
+        # Left
+        row = self.row
+        col = self.col - 1
+        while col > -1:
+            if board[row][col] is not Piece:
+                moves.append((row, col))
+            elif board[row][col].color != self.color:
+                moves.append((row, col))
+                break
+            else:
+                break
+            col -= 1
+
+        # Diagonally left and up
+        row = self.row - 1
+        col = self.col - 1
+        while row > -1:
+            if board[row][col] is not Piece:
+                moves.append((row, col))
+            elif board[row][col].color != self.color:
+                moves.append((row, col))
+                break
+            else:
+                break
+            row -= 1
+            col -= 1
+
+        return moves
 
 
 class King(Piece):
-    pass
+    def get_valid_moves(self, board):
+        moves = []
 
+        # Up (row - 1)
+        if self.row > 0:
+            if board[self.row - 1][self.col] is not Piece:
+                moves.append((self.row - 1, self.col))
+            elif board[self.row - 1][self.col].color != self.color:
+                moves.append((self.row - 1, self.col))
+
+        # Diagonally up and right (row - 1) (col + 1)
+        if self.row > 0 and self.col < 7:
+            if board[self.row - 1][self.col + 1] is not Piece:
+                moves.append((self.row - 1, self.col + 1))
+            elif board[self.row - 1][self.col + 1].color != self.color:
+                moves.append((self.row - 1, self.col + 1))
+
+        # Right (col + 1)
+        if self.col < 7:
+            if board[self.row][self.col + 1] is not Piece:
+                moves.append((self.row, self.col + 1))
+            elif board[self.row][self.col + 1].color != self.color:
+                moves.append((self.row, self.col + 1))
+
+        # Diagonally down and right (row + 1) (col + 1)
+        if self.row < 7 and self.col < 7:
+            if board[self.row + 1][self.col + 1] is not Piece:
+                moves.append((self.row + 1, self.col + 1))
+            elif board[self.row + 1][self.col + 1].color != self.color:
+                moves.append((self.row + 1, self.col + 1))
+
+        # Down (row + 1)
+        if self.row < 7:
+            if board[self.row + 1][self.col] is not Piece:
+                moves.append((self.row + 1, self.col))
+            elif board[self.row + 1][self.col].color != self.color:
+                moves.append((self.row + 1, self.col))
+
+        # Diagonally down and left (row + 1) (col - 1)
+        if self.row < 7 and self.col > 0:
+            if board[self.row + 1][self.col - 1] is not Piece:
+                moves.append((self.row + 1, self.col - 1))
+            elif board[self.row + 1][self.col - 1].color != self.color:
+                moves.append((self.row + 1, self.col - 1))
+
+        # Left (col - 1)
+        if self.col > 0:
+            if board[self.row][self.col - 1] is not Piece:
+                moves.append((self.row, self.col - 1))
+            elif board[self.row][self.col - 1].color != self.color:
+                moves.append((self.row, self.col - 1))
+
+        # Diagonally up and left (row - 1) (col - 1)
+        if self.row > 0 and self.col > 0:
+            if board[self.row - 1][self.col - 1] is not Piece:
+                moves.append((self.row - 1, self.col - 1))
+            elif board[self.row - 1][self.col - 1].color != self.color:
+                moves.append((self.row - 1, self.col - 1))
+
+        return moves
 
