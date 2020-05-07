@@ -10,7 +10,44 @@ class Piece:
 
 
 class Pawn(Piece):
-    pass
+    def get_legal_moves(self, board):
+        moves = []
+
+        # White
+        if self.color == "white":
+            if self.row > 0:
+                if board[self.row - 1][self.col] is not Piece:
+                    moves.append((self.row - 1, self.col))
+                # Capture diagonally left
+                if board[self.row - 1][self.col - 1] is Piece and board[self.row - 1][self.col - 1].color != self.color:
+                    moves.append((self.row - 1, self.col - 1))
+                # Capture diagonally right
+                if board[self.row - 1][self.col + 1] is Piece and board[self.row - 1][self.col + 1].color != self.color:
+                    moves.append((self.row - 1, self.col + 1))
+
+            # Starting position
+            if self.row == 6:
+                if board[self.row - 1][self.col] is not Piece and board[self.row - 2][self.col] is not Piece:
+                    moves.append((self.row - 2, self.col))
+
+        # Black
+        else:
+            if self.row < 7:
+                if board[self.row + 1][self.col] is not Piece:
+                    moves.append((self.row + 1, self.col))
+                # Capture diagonally left
+                if board[self.row + 1][self.col - 1] is Piece and board[self.row + 1][self.col - 1].color != self.color:
+                    moves.append((self.row + 1, self.col - 1))
+                # Capture diagonally right
+                if board[self.row + 1][self.col + 1] is Piece and board[self.row + 1][self.col + 1].color != self.color:
+                    moves.append((self.row + 1, self.col + 1))
+
+            # Starting position
+            if self.row == 1:
+                if board[self.row + 1][self.col] is not Piece and board[self.row + 2][self.col] is not Piece:
+                    moves.append((self.row + 2, self.col))
+
+        return moves
 
 
 class Rook(Piece):
