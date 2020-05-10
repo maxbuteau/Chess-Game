@@ -65,7 +65,7 @@ class Board:
         self.board[7][6] = Knight(7, 6, "white")
         self.board[7][7] = Rook(7, 7, "white")
 
-        # Black pawns
+        # White pawns
         self.board[6][0] = Pawn(6, 0, "white")
         self.board[6][1] = Pawn(6, 1, "white")
         self.board[6][2] = Pawn(6, 2, "white")
