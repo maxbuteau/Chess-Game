@@ -60,7 +60,7 @@ def get_square(row, col, a_canvas):
 
 def show_available_moves(piece, board, a_canvas):
     for move in piece.get_valid_moves(board):
-        square = get_square(move[0], move[1], a_canvas) # grid coordinates inversed for canvas
+        square = get_square(move[0], move[1], a_canvas)
         a_canvas.itemconfig(square, fill="blue")
 
 

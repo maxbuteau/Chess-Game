@@ -20,11 +20,13 @@ class Pawn(Piece):
                 if not isinstance(board[self.row - 1][self.col], Piece):
                     moves.append((self.row - 1, self.col))
                 # Capture diagonally left
-                if isinstance(board[self.row - 1][self.col - 1], Piece) and board[self.row - 1][self.col - 1].color != self.color:
-                    moves.append((self.row - 1, self.col - 1))
+                if self.col > 0:
+                    if isinstance(board[self.row - 1][self.col - 1], Piece) and board[self.row - 1][self.col - 1].color != self.color:
+                        moves.append((self.row - 1, self.col - 1))
                 # Capture diagonally right
-                if isinstance(board[self.row - 1][self.col + 1], Piece) and board[self.row - 1][self.col + 1].color != self.color:
-                    moves.append((self.row - 1, self.col + 1))
+                if self.col < 7:
+                    if isinstance(board[self.row - 1][self.col + 1], Piece) and board[self.row - 1][self.col + 1].color != self.color:
+                        moves.append((self.row - 1, self.col + 1))
 
             # Starting position
             if self.row == 6:
@@ -39,11 +41,13 @@ class Pawn(Piece):
                 if not isinstance(board[self.row + 1][self.col], Piece):
                     moves.append((self.row + 1, self.col))
                 # Capture diagonally left
-                if isinstance(board[self.row + 1][self.col - 1], Piece) and board[self.row + 1][self.col - 1].color != self.color:
-                    moves.append((self.row + 1, self.col - 1))
+                if self.col > 0:
+                    if isinstance(board[self.row + 1][self.col - 1], Piece) and board[self.row + 1][self.col - 1].color != self.color:
+                        moves.append((self.row + 1, self.col - 1))
                 # Capture diagonally right
-                if isinstance(board[self.row + 1][self.col + 1], Piece) and board[self.row + 1][self.col + 1].color != self.color:
-                    moves.append((self.row + 1, self.col + 1))
+                if self.col < 7:
+                    if isinstance(board[self.row + 1][self.col + 1], Piece) and board[self.row + 1][self.col + 1].color != self.color:
+                        moves.append((self.row + 1, self.col + 1))
 
             # Starting position
             if self.row == 1:
@@ -222,6 +226,7 @@ class Bishop(Piece):
                     break
                 else:
                     break
+        return moves
 
 
 class Queen(Piece):
