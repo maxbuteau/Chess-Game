@@ -3,10 +3,9 @@ class Piece:
         self.row = row
         self.col = col
         self.color = color
-        self.move_list = []
 
-    def update_move_list(self, board):
-        self.move_list = self.get_legal_moves(board)
+    def move(self, row_to, col_to):
+        pass
 
 
 class Pawn(Piece):
@@ -176,7 +175,7 @@ class Bishop(Piece):
         # Diagonally up right
         row = self.row - 1
         col = self.col + 1
-        while self.row > -1 and self.col < 8:
+        while row > -1 and col < 8:
             if not isinstance(board[row][col], Piece):
                 moves.append((row, col))
             elif board[row][col].color != self.color:
@@ -187,45 +186,47 @@ class Bishop(Piece):
             row -= 1
             col += 1
 
-            # Diagonally down right
-            row = self.row + 1
-            col = self.col + 1
-            while self.row < 8 and self.col < 8:
-                if not isinstance(board[row][col], Piece):
-                    moves.append((row, col))
-                elif board[row][col].color != self.color:
-                    moves.append((row, col))
-                    break
-                else:
-                    break
-                row += 1
-                col += 1
+        # Diagonally down right
+        row = self.row + 1
+        col = self.col + 1
+        while row < 8 and col < 8:
+            if not isinstance(board[row][col], Piece):
+                moves.append((row, col))
+            elif board[row][col].color != self.color:
+                moves.append((row, col))
+                break
+            else:
+                break
+            row += 1
+            col += 1
 
-            # Diagonally down left
-            row = self.row + 1
-            col = self.col - 1
-            while self.row < 8 and self.col > -1:
-                if not isinstance(board[row][col], Piece):
-                    moves.append((row, col))
-                elif board[row][col].color != self.color:
-                    moves.append((row, col))
-                    break
-                else:
-                    break
-                row += 1
-                col -= 1
+        # Diagonally down left
+        row = self.row + 1
+        col = self.col - 1
+        while row < 8 and col > -1:
+            if not isinstance(board[row][col], Piece):
+                moves.append((row, col))
+            elif board[row][col].color != self.color:
+                moves.append((row, col))
+                break
+            else:
+                break
+            row += 1
+            col -= 1
 
-            # Diagonally up left
-            row = self.row - 1
-            col = self.col + 1
-            while self.row > -1 and self.col < 8:
-                if not isinstance(board[row][col], Piece):
-                    moves.append((row, col))
-                elif board[row][col].color != self.color:
-                    moves.append((row, col))
-                    break
-                else:
-                    break
+        # Diagonally up left
+        row = self.row - 1
+        col = self.col - 1
+        while row > -1 and col > -1:
+            if not isinstance(board[row][col], Piece):
+                moves.append((row, col))
+            elif board[row][col].color != self.color:
+                moves.append((row, col))
+                break
+            else:
+                break
+            row -= 1
+            col -= 1
         return moves
 
 

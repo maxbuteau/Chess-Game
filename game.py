@@ -17,6 +17,9 @@ class BoardGUI(Frame):
         self.display_pieces()
         self.canvas.bind("<Button-1>", lambda event: self.on_click(event))
 
+        self.turn = "white"
+        self.selected_piece = None
+
     def draw_board(self):
         for row in range(0, 8):
             for col in range(0, 8):
@@ -50,12 +53,32 @@ class BoardGUI(Frame):
             square = self.get_square(move[0], move[1])
             self.canvas.itemconfig(square, fill="blue")
 
+    def reset_highlights(self):
+        for row in range(0, 8):
+            for col in range(0, 8):
+                square = self.get_square(row, col)
+                if (row + col) % 2 != 0:
+                    self.canvas.itemconfig(square, fill="green")
+                else:
+                    self.canvas.itemconfig(square, fill="")
+
+    def move(self, piece, row_to, col_to):
+        pass
+
     def on_click(self, event):
-        piece = self.board[int(event.y / TILE_SIZE)][int(event.x / TILE_SIZE)]
-        if isinstance(piece, Piece):
-            selected_square = self.get_square(piece.row, piece.col)
-            self.canvas.itemconfig(selected_square, fill="orange")
-            self.show_available_moves(piece)
+        row = int(event.y / TILE_SIZE)
+        col = int(event.x / TILE_SIZE)
+        piece = self.board[row][col]
+        if self.selected_piece is not None and (row, col) in self.selected_piece.get_valid_moves(self.board):
+            self.move(piece, row, col)
+
+        else:
+            self.reset_highlights()
+            if isinstance(piece, Piece) and piece.color == self.turn:
+                selected_square = self.get_square(piece.row, piece.col)
+                self.canvas.itemconfig(selected_square, fill="orange")
+                self.show_available_moves(piece)
+                self.selected_piece = piece
 
 
 def start_game():
