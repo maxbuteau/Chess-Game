@@ -19,6 +19,8 @@ class BoardGUI(Frame):
         self.canvas.bind("<Button-1>", lambda event: self.on_click(event))
 
         self.turn = "white"
+        self.is_in_check = False
+        self.king_pos = None
         self.selected_piece = None
 
     def draw_board(self):
@@ -43,7 +45,7 @@ class BoardGUI(Frame):
                     img = PhotoImage(file="images/%s%s.png" % (piece.color[0], type(piece).__name__))
                     label = Label(image=img)
                     label.image = img  # keep a reference so that image is not garbage collected
-                    piece.img_id = self.canvas.create_image(x1, y1, image=img, anchor=CENTER, tags="img")
+                    self.canvas.create_image(x1, y1, image=img, anchor=CENTER, tags="img")
 
     def get_square(self, row, col):
         # canvas grid coords are inversed
@@ -62,6 +64,9 @@ class BoardGUI(Frame):
                     self.canvas.itemconfig(square, fill="green")
                 else:
                     self.canvas.itemconfig(square, fill="")
+        if self.is_in_check:
+            square = self.get_square(self.king_pos[0], self.king_pos[1])
+            self.canvas.itemconfig(square, fill="red")
 
     def move(self, row_to, col_to):
         prev_row = self.selected_piece.row
@@ -73,6 +78,24 @@ class BoardGUI(Frame):
         self.reset_highlights()
         self.display_pieces()
         self.selected_piece = None
+        if self.turn == "white":
+            # Check for checks on opposing king at the end of the turn
+            if self.game.is_in_check("black") is not False:
+                self.is_in_check = True
+                self.king_pos = self.game.is_in_check("black")
+            else:
+                self.is_in_check = False
+                self.king_pos = None
+            self.turn = "black"
+        else:
+            if self.game.is_in_check("white") is not False:
+                self.is_in_check = True
+                self.king_pos = self.game.is_in_check("white")
+            else:
+                self.is_in_check = False
+                self.king_pos = None
+            self.turn = "white"
+        self.reset_highlights()
 
     def on_click(self, event):
         row = int(event.y / TILE_SIZE)

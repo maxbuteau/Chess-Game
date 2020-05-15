@@ -87,23 +87,22 @@ class Board:
                         self.board[piece.row][piece.col] = piece
                         self.board[row][col] = 0
 
-    def display(self):
-
-        row_counter = self.rows
-        for row in self.board:
-            output = ''
-            for piece in row:
-                if piece == 0:
-                    output += ' - '
-                else:
-                    if piece.color == "white":
-                        output += f' {white_piece.get(type(piece))} '
-                    else:
-                        output += f' {black_piece.get(type(piece))} '
-            print(output + f'   {row_counter}')
-            row_counter -= 1
-        print()
-        print(' a  b  c  d  e  f  g  h ')
+    def is_in_check(self, color):
+        king_pos = None
+        for row in range(0, 8):
+            for col in range(0, 8):
+                piece = self.board[row][col]
+                if piece != 0 and piece.color == color and piece.is_king:
+                    king_pos = (piece.row, piece.col)
+                    break
+        for row in range(0, 8):
+            for col in range(0, 8):
+                piece = self.board[row][col]
+                if piece != 0 and piece.color != color:
+                    for move in piece.get_valid_moves(self.board):
+                        if move == king_pos:
+                            return king_pos
+        return False
 
 
 

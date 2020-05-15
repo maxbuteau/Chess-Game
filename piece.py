@@ -3,7 +3,7 @@ class Piece:
         self.row = row
         self.col = col
         self.color = color
-        self.img_id = None
+        self.is_king = False
 
     def move(self, row_to, col_to):
         self.row = row_to
@@ -348,6 +348,11 @@ class Queen(Piece):
 
 
 class King(Piece):
+
+    def __init__(self, row, col, color):
+        super().__init__(row, col, color)
+        self.is_king = True
+
     def get_valid_moves(self, board):
         moves = []
 
