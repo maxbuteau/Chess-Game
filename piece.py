@@ -3,9 +3,11 @@ class Piece:
         self.row = row
         self.col = col
         self.color = color
+        self.img_id = None
 
     def move(self, row_to, col_to):
-        pass
+        self.row = row_to
+        self.col = col_to
 
 
 class Pawn(Piece):

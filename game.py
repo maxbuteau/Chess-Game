@@ -7,10 +7,11 @@ TILE_SIZE = 100
 
 class BoardGUI(Frame):
 
-    def __init__(self, parent, board):
+    def __init__(self, parent, game):
         Frame.__init__(self, parent)
         self.parent = parent
-        self.board = board
+        self.game = game
+        self.board = game.board
         self.canvas = Canvas(self, width=800, height=800, bg="light grey")
         self.canvas.pack()
         self.draw_board()
@@ -42,7 +43,7 @@ class BoardGUI(Frame):
                     img = PhotoImage(file="images/%s%s.png" % (piece.color[0], type(piece).__name__))
                     label = Label(image=img)
                     label.image = img  # keep a reference so that image is not garbage collected
-                    self.canvas.create_image(x1, y1, image=img, anchor=CENTER)
+                    piece.img_id = self.canvas.create_image(x1, y1, image=img, anchor=CENTER, tags="img")
 
     def get_square(self, row, col):
         # canvas grid coords are inversed
@@ -62,15 +63,23 @@ class BoardGUI(Frame):
                 else:
                     self.canvas.itemconfig(square, fill="")
 
-    def move(self, piece, row_to, col_to):
-        pass
+    def move(self, row_to, col_to):
+        prev_row = self.selected_piece.row
+        prev_col = self.selected_piece.col
+        self.selected_piece.move(row_to, col_to)
+        self.game.update_board()
+        for img in self.canvas.find_withtag("img"):
+            self.canvas.delete(img)
+        self.reset_highlights()
+        self.display_pieces()
+        self.selected_piece = None
 
     def on_click(self, event):
         row = int(event.y / TILE_SIZE)
         col = int(event.x / TILE_SIZE)
         piece = self.board[row][col]
         if self.selected_piece is not None and (row, col) in self.selected_piece.get_valid_moves(self.board):
-            self.move(piece, row, col)
+            self.move(row, col)
 
         else:
             self.reset_highlights()
@@ -85,7 +94,7 @@ def start_game():
     root = Tk()
     root.title("Chess")
     game = Board()
-    gui = BoardGUI(root, game.board)
+    gui = BoardGUI(root, game)
     gui.pack(padx=25, pady=25)
     root.mainloop()
 

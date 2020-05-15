@@ -78,6 +78,15 @@ class Board:
     def get_piece(self, row, col):
         return self.board[row][col]
 
+    def update_board(self):
+        for row in range(0, 8):
+            for col in range(0, 8):
+                piece = self.board[row][col]
+                if piece != 0:
+                    if piece.row != row or piece.col != col:
+                        self.board[piece.row][piece.col] = piece
+                        self.board[row][col] = 0
+
     def display(self):
 
         row_counter = self.rows
