@@ -111,7 +111,27 @@ class BoardGUI(Frame):
         col = int(event.x / TILE_SIZE)
         piece = self.board[row][col]
         if self.selected_piece is not None and (row, col) in self.game.get_legal_moves(self.selected_piece):
-            self.move(row, col)
+            # Castling King side
+            if self.selected_piece.is_king and col == self.selected_piece.col + 2:
+                turn = self.selected_piece.color
+                self.move(row, col)
+                # Prevent from switching turns even if move 2 pieces
+                self.game.turn = turn
+                self.selected_piece = self.board[row][col + 1]
+                self.move(row, col - 1)
+
+            # Castling Queen side
+            elif self.selected_piece.is_king and col == self.selected_piece.col - 2:
+                turn = self.selected_piece.color
+                self.move(row, col)
+                # Prevent from switching turns even if move 2 pieces
+                self.game.turn = turn
+                self.selected_piece = self.board[row][col - 2]
+                self.move(row, col + 1)
+
+            # Normal move
+            else:
+                self.move(row, col)
 
         else:
             self.reset_highlights()

@@ -4,10 +4,12 @@ class Piece:
         self.col = col
         self.color = color
         self.is_king = False
+        self.has_moved = False
 
     def move(self, row_to, col_to):
         self.row = row_to
         self.col = col_to
+        self.has_moved = True
 
 
 class Pawn(Piece):
@@ -59,6 +61,7 @@ class Pawn(Piece):
 
 
 class Rook(Piece):
+
     def get_valid_moves(self, board):
         moves = []
         # Up
@@ -411,6 +414,18 @@ class King(Piece):
                 moves.append((self.row - 1, self.col - 1))
             elif board[self.row - 1][self.col - 1].color != self.color:
                 moves.append((self.row - 1, self.col - 1))
+
+        # Castling king side
+        if not self.has_moved and not isinstance(board[self.row][self.col + 1], Piece) and not isinstance(board[self.row][self.col + 2], Piece):
+            rook = board[self.row][self.col + 3]
+            if isinstance(rook, Rook) and not rook.has_moved:
+                moves.append((self.row, self.col + 2))
+
+        # Castling queen side
+        if not self.has_moved and not isinstance(board[self.row][self.col - 1], Piece) and not isinstance(board[self.row][self.col - 2], Piece):
+            rook = board[self.row][self.col - 4]
+            if isinstance(rook, Rook) and not rook.has_moved:
+                moves.append((self.row, self.col - 2))
 
         return moves
 

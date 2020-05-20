@@ -94,6 +94,7 @@ class Board:
         start_row = piece.row
         start_col = piece.col
         moves = piece.get_valid_moves(self.board)
+        already_moved = piece.has_moved
 
         for move in moves[:]:
             if self.board[move[0]][move[1]] != 0:
@@ -103,6 +104,8 @@ class Board:
             if self.is_in_check(piece.color) is not False:
                 moves.remove(move)
             piece.move(start_row, start_col)
+            if not already_moved:
+                piece.has_moved = False
             self.update_board()
             if self.captured_piece is not None:
                 self.board[self.captured_piece.row][self.captured_piece.col] = self.captured_piece
