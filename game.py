@@ -52,7 +52,7 @@ class BoardGUI(Frame):
         return self.canvas.find_overlapping(col * TILE_SIZE, row * TILE_SIZE, (col * TILE_SIZE) + TILE_SIZE, (row * TILE_SIZE) + 1)
 
     def show_available_moves(self, piece):
-        for move in piece.get_valid_moves(self.board):
+        for move in self.game.get_legal_moves(piece):
             square = self.get_square(move[0], move[1])
             self.canvas.itemconfig(square, fill="blue")
 
@@ -69,8 +69,6 @@ class BoardGUI(Frame):
             self.canvas.itemconfig(square, fill="red")
 
     def move(self, row_to, col_to):
-        prev_row = self.selected_piece.row
-        prev_col = self.selected_piece.col
         self.selected_piece.move(row_to, col_to)
         self.game.update_board()
         for img in self.canvas.find_withtag("img"):
@@ -78,11 +76,16 @@ class BoardGUI(Frame):
         self.reset_highlights()
         self.display_pieces()
         self.selected_piece = None
+        self.king_check_highlights()
+
+    def king_check_highlights(self):
         if self.turn == "white":
-            # Check for checks on opposing king at the end of the turn
             if self.game.is_in_check("black") is not False:
                 self.is_in_check = True
                 self.king_pos = self.game.is_in_check("black")
+            elif self.game.is_in_check("white") is not False:
+                self.is_in_check = True
+                self.king_pos = self.game.is_in_check("white")
             else:
                 self.is_in_check = False
                 self.king_pos = None
@@ -91,6 +94,9 @@ class BoardGUI(Frame):
             if self.game.is_in_check("white") is not False:
                 self.is_in_check = True
                 self.king_pos = self.game.is_in_check("white")
+            elif self.game.is_in_check("black") is not False:
+                self.is_in_check = True
+                self.king_pos = self.game.is_in_check("black")
             else:
                 self.is_in_check = False
                 self.king_pos = None
@@ -101,7 +107,7 @@ class BoardGUI(Frame):
         row = int(event.y / TILE_SIZE)
         col = int(event.x / TILE_SIZE)
         piece = self.board[row][col]
-        if self.selected_piece is not None and (row, col) in self.selected_piece.get_valid_moves(self.board):
+        if self.selected_piece is not None and (row, col) in self.game.get_legal_moves(self.selected_piece):
             self.move(row, col)
 
         else:

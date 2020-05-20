@@ -5,34 +5,17 @@ from piece import Queen
 from piece import King
 from piece import Pawn
 from piece import Piece
+import copy
 
 COLS = 8
 ROWS = 8
-
-white_piece = {
-    Pawn: 'P',
-    Rook: 'R',
-    Knight: 'N',
-    Bishop: 'B',
-    King: 'K',
-    Queen: 'Q'
-}
-
-black_piece = {
-    Pawn: 'p',
-    Rook: 'r',
-    Knight: 'n',
-    Bishop: 'b',
-    King: 'k',
-    Queen: 'q'
-}
 
 
 class Board:
     def __init__(self):
         self.cols = COLS
         self.rows = ROWS
-
+        self.captured_piece = None
         self.board = [[0 for col in range(COLS)] for rows in range(ROWS)]
 
         # Black pieces
@@ -89,12 +72,14 @@ class Board:
 
     def is_in_check(self, color):
         king_pos = None
+        # Finding the king
         for row in range(0, 8):
             for col in range(0, 8):
                 piece = self.board[row][col]
                 if piece != 0 and piece.color == color and piece.is_king:
                     king_pos = (piece.row, piece.col)
                     break
+        # Check if one of the opposing pieces puts the king in check
         for row in range(0, 8):
             for col in range(0, 8):
                 piece = self.board[row][col]
@@ -104,6 +89,26 @@ class Board:
                             return king_pos
         return False
 
+    def get_legal_moves(self, piece):
+        start_row = piece.row
+        start_col = piece.col
+        moves = piece.get_valid_moves(self.board)
+
+        for move in moves[:]:
+            #print(move)
+            if self.board[move[0]][move[1]] != 0:
+                self.captured_piece = self.board[move[0]][move[1]]
+            piece.move(move[0], move[1])
+            self.update_board()
+            if self.is_in_check(piece.color) is not False:
+                print(move)
+                moves.remove(move)
+            piece.move(start_row, start_col)
+            self.update_board()
+            if self.captured_piece is not None:
+                self.board[self.captured_piece.row][self.captured_piece.col] = self.captured_piece
+                self.captured_piece = None
+        return moves
 
 
 
