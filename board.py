@@ -16,6 +16,7 @@ class Board:
         self.cols = COLS
         self.rows = ROWS
         self.captured_piece = None
+        self.turn = "white"
         self.board = [[0 for col in range(COLS)] for rows in range(ROWS)]
 
         # Black pieces
@@ -95,13 +96,11 @@ class Board:
         moves = piece.get_valid_moves(self.board)
 
         for move in moves[:]:
-            #print(move)
             if self.board[move[0]][move[1]] != 0:
                 self.captured_piece = self.board[move[0]][move[1]]
             piece.move(move[0], move[1])
             self.update_board()
             if self.is_in_check(piece.color) is not False:
-                print(move)
                 moves.remove(move)
             piece.move(start_row, start_col)
             self.update_board()
@@ -109,6 +108,36 @@ class Board:
                 self.board[self.captured_piece.row][self.captured_piece.col] = self.captured_piece
                 self.captured_piece = None
         return moves
+
+    def get_game_status(self):
+        turn_to_check = ""
+        if self.turn == "white":
+            turn_to_check = "black"
+        else:
+            turn_to_check = "white"
+
+        # Checkmate
+        if self.is_in_check(turn_to_check) is not False:
+            total_moves = []
+            for row in range(0, 8):
+                for col in range(0, 8):
+                    piece = self.board[row][col]
+                    if piece != 0 and piece.color == turn_to_check:
+                        total_moves.append(self.get_legal_moves(piece))
+            if not any(total_moves):
+                print(f"Checkmate, {turn_to_check} lost")
+
+        # Stalemate
+        elif not self.is_in_check(turn_to_check):
+            total_moves = []
+            for row in range(0, 8):
+                for col in range(0, 8):
+                    piece = self.board[row][col]
+                    if piece != 0 and piece.color == turn_to_check:
+                        total_moves.append(self.get_legal_moves(piece))
+            if not any(total_moves):
+                print("Stalemate")
+
 
 
 
