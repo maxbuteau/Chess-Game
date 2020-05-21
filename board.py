@@ -97,6 +97,34 @@ class Board:
         already_moved = piece.has_moved
 
         for move in moves[:]:
+            # Check for castling king side
+            if piece.is_king and move[1] == start_col + 2:
+                if self.is_in_check(piece.color) is not False:
+                    moves.remove(move)
+                else:
+                    for row in range(0, 8):
+                        for col in range(0, 8):
+                            opponent_piece = self.board[row][col]
+                            if opponent_piece != 0 and opponent_piece.color != piece.color:
+                                for test_move in opponent_piece.get_valid_moves(self.board):
+                                    if test_move == (start_row, start_col + 1):
+                                        moves.remove(move)
+                                        break
+
+            # Check for castling queen side
+            if piece.is_king and move[1] == start_col - 2:
+                if self.is_in_check(piece.color) is not False:
+                    moves.remove(move)
+                else:
+                    for row in range(0, 8):
+                        for col in range(0, 8):
+                            opponent_piece = self.board[row][col]
+                            if opponent_piece != 0 and opponent_piece.color != piece.color:
+                                for test_move in opponent_piece.get_valid_moves(self.board):
+                                    if test_move == (start_row, start_col - 1):
+                                        moves.remove(move)
+                                        break
+
             if self.board[move[0]][move[1]] != 0:
                 self.captured_piece = self.board[move[0]][move[1]]
             piece.move(move[0], move[1])
