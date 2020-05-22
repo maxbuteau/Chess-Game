@@ -156,7 +156,7 @@ class Board:
                     if piece != 0 and piece.color == turn_to_check:
                         total_moves.append(self.get_legal_moves(piece))
             if not any(total_moves):
-                print(f"Checkmate, {turn_to_check} lost")
+                return f"Checkmate, {self.turn} won"
 
         # Stalemate
         elif not self.is_in_check(turn_to_check):
@@ -167,7 +167,10 @@ class Board:
                     if piece != 0 and piece.color == turn_to_check:
                         total_moves.append(self.get_legal_moves(piece))
             if not any(total_moves):
-                print("Stalemate")
+                return "Stalemate"
+        return "Ongoing"
+
+
 
 
 

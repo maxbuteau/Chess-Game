@@ -73,9 +73,13 @@ class BoardGUI(Frame):
             self.canvas.delete(img)
         self.reset_highlights()
         self.display_pieces()
+        if self.selected_piece.is_pawn:
+            if row_to == 0 or row_to == 7:
+                self.promote(self.selected_piece)
         self.selected_piece = None
         self.king_check_highlights()
-        self.game.get_game_status()
+        if self.game.get_game_status() != "Ongoing":
+            self.display_end_screen(self.game.get_game_status())
         if self.game.turn == "white":
             self.game.turn = "black"
         else:
@@ -92,7 +96,6 @@ class BoardGUI(Frame):
             else:
                 self.is_in_check = False
                 self.king_pos = None
-            #self.game.turn = "black"
         else:
             if self.game.is_in_check("white") is not False:
                 self.is_in_check = True
@@ -103,8 +106,78 @@ class BoardGUI(Frame):
             else:
                 self.is_in_check = False
                 self.king_pos = None
-            #self.game.turn = "white"
         self.reset_highlights()
+
+    def promote(self, pawn):
+
+        self.canvas.unbind("<Button-1>")
+
+        x1 = pawn.col * TILE_SIZE
+        y1 = 0
+        x2 = x1 + TILE_SIZE
+        y2 = 0
+
+        if self.selected_piece.color == "white":
+            y2 = 4 * TILE_SIZE
+        else:
+            y1 = 4 * TILE_SIZE
+            y2 = 8 * TILE_SIZE
+
+        queen_image = PhotoImage(file="images/%sQueen.png" % (pawn.color[0]))
+        queen_label = Label(image=queen_image)
+        queen_label.image = queen_image  # keep a reference so that image is not garbage collected
+
+        rook_image = PhotoImage(file="images/%sRook.png" % (pawn.color[0]))
+        rook_label = Label(image=rook_image)
+        rook_label.image = rook_image  # keep a reference so that image is not garbage collected
+
+        knight_image = PhotoImage(file="images/%sKnight.png" % (pawn.color[0]))
+        knight_label = Label(image=knight_image)
+        knight_label.image = knight_image  # keep a reference so that image is not garbage collected
+
+        bishop_image = PhotoImage(file="images/%sBishop.png" % (pawn.color[0]))
+        bishop_label = Label(image=bishop_image)
+        bishop_label.image = bishop_image  # keep a reference so that image is not garbage collected
+
+        queen_button = Button(self.canvas, image=queen_image, command=lambda: self.switch_promoted_pawn(pawn, "Queen"))
+        self.canvas.create_window(x1 + 50, y1 + 50, window=queen_button, tags="button")
+
+        rook_button = Button(self.canvas, image=rook_image, command=lambda: self.switch_promoted_pawn(pawn, "Rook"))
+        self.canvas.create_window(x1 + 50, y1 + TILE_SIZE + 50, window=rook_button, tags="button")
+
+        knight_button = Button(self.canvas, image=knight_image, command=lambda: self.switch_promoted_pawn(pawn, "Knight"))
+        self.canvas.create_window(x1 + 50, y1 + 2 * TILE_SIZE + 50, window=knight_button, tags="button")
+
+        bishop_button = Button(self.canvas, image=bishop_image, command=lambda: self.switch_promoted_pawn(pawn, "Bishop"))
+        self.canvas.create_window(x1 + 50, y1 + 3 * TILE_SIZE + 50, window=bishop_button, tags="button")
+
+    def switch_promoted_pawn(self, pawn, piece):
+        row = pawn.row
+        col = pawn.col
+        color = pawn.color
+
+        if piece == "Queen":
+            self.board[row][col] = Queen(row, col, color)
+        elif piece == "Rook":
+            self.board[row][col] = Rook(row, col, color)
+        elif piece == "Knight":
+            self.board[row][col] = Knight(row, col, color)
+        else:
+            self.board[row][col] = Bishop(row, col, color)
+
+        for img in self.canvas.find_withtag("img"):
+            self.canvas.delete(img)
+        self.display_pieces()
+
+        for btn in self.canvas.find_withtag("button"):
+            self.canvas.delete(btn)
+
+        self.canvas.bind("<Button-1>", lambda event: self.on_click(event))
+
+    def display_end_screen(self, text):
+        self.canvas.create_rectangle(50, 350, 750, 450, fill="white")
+        self.canvas.create_text(400, 400, text=text, fill="blue", font=("Times", "46", "bold"))
+        self.canvas.unbind("<Button-1>")
 
     def on_click(self, event):
         row = int(event.y / TILE_SIZE)

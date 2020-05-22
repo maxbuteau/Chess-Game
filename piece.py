@@ -4,6 +4,7 @@ class Piece:
         self.col = col
         self.color = color
         self.is_king = False
+        self.is_pawn = False
         self.has_moved = False
 
     def move(self, row_to, col_to):
@@ -13,6 +14,10 @@ class Piece:
 
 
 class Pawn(Piece):
+    def __init__(self, row, col, color):
+        super().__init__(row, col, color)
+        self.is_pawn = True
+
     def get_valid_moves(self, board):
         moves = []
 
