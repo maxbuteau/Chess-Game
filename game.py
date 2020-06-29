@@ -67,6 +67,7 @@ class BoardGUI(Frame):
             self.canvas.itemconfig(square, fill="red")
 
     def move(self, row_to, col_to):
+        start_row = self.selected_piece.row
         self.selected_piece.move(row_to, col_to)
         self.game.update_board()
         for img in self.canvas.find_withtag("img"):
@@ -76,6 +77,8 @@ class BoardGUI(Frame):
         if self.selected_piece.is_pawn:
             if row_to == 0 or row_to == 7:
                 self.promote(self.selected_piece)
+            elif row_to == start_row + 2 or row_to == start_row - 2:
+                self.game.en_passant_possibility = self.selected_piece
         self.selected_piece = None
         self.king_check_highlights()
         if self.game.get_game_status() != "Ongoing":

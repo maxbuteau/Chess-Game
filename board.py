@@ -17,6 +17,7 @@ class Board:
         self.rows = ROWS
         self.captured_piece = None
         self.turn = "white"
+        self.en_passant_possibility = None
         self.board = [[0 for col in range(COLS)] for rows in range(ROWS)]
 
         # Black pieces
@@ -96,6 +97,20 @@ class Board:
         moves = piece.get_valid_moves(self.board)
         already_moved = piece.has_moved
 
+        # #check for en passant
+        # if piece.is_pawn and self.en_passant_possibility is not None and piece.color != self.en_passant_possibility.color:
+        #     print(piece.color)
+        #     print(self.en_passant_possibility.color)
+        #     print("hey")
+        #     if piece.row == self.en_passant_possibility.row:
+        #         print("you")
+        #         if piece.col == self.en_passant_possibility.col + 1 or piece.col == self.en_passant_possibility.col - 1:
+        #             if piece.color == "white":
+        #                 moves.append((self.en_passant_possibility.row - 1, self.en_passant_possibility.col))
+        #             else:
+        #                 moves.append((self.en_passant_possibility.row + 1, self.en_passant_possibility.col))
+        # self.en_passant_possibility = None
+
         for move in moves[:]:
             # Check for castling king side
             if piece.is_king and move[1] == start_col + 2:
@@ -138,6 +153,7 @@ class Board:
             if self.captured_piece is not None:
                 self.board[self.captured_piece.row][self.captured_piece.col] = self.captured_piece
                 self.captured_piece = None
+
         return moves
 
     def get_game_status(self):
