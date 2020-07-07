@@ -67,6 +67,7 @@ class BoardGUI(Frame):
             self.canvas.itemconfig(square, fill="red")
 
     def move(self, row_to, col_to):
+        is_promotion = False
         start_row = self.selected_piece.row
         self.selected_piece.move(row_to, col_to)
         self.game.update_board()
@@ -76,13 +77,19 @@ class BoardGUI(Frame):
         self.display_pieces()
         if self.selected_piece.is_pawn:
             if row_to == 0 or row_to == 7:
+                is_promotion = True
                 self.promote(self.selected_piece)
+
             elif row_to == start_row + 2 or row_to == start_row - 2:
                 self.game.en_passant_possibility = self.selected_piece
         self.selected_piece = None
         self.king_check_highlights()
         if self.game.get_game_status() != "Ongoing":
             self.display_end_screen(self.game.get_game_status())
+        if not is_promotion:
+            self.switch_turn()
+
+    def switch_turn(self):
         if self.game.turn == "white":
             self.game.turn = "black"
         else:
@@ -142,6 +149,8 @@ class BoardGUI(Frame):
         bishop_label = Label(image=bishop_image)
         bishop_label.image = bishop_image  # keep a reference so that image is not garbage collected
 
+
+
         queen_button = Button(self.canvas, image=queen_image, command=lambda: self.switch_promoted_pawn(pawn, "Queen"))
         self.canvas.create_window(x1 + 50, y1 + 50, window=queen_button, tags="button")
 
@@ -174,6 +183,11 @@ class BoardGUI(Frame):
 
         for btn in self.canvas.find_withtag("button"):
             self.canvas.delete(btn)
+
+        self.king_check_highlights()
+        if self.game.get_game_status() != "Ongoing":
+            self.display_end_screen(self.game.get_game_status())
+        self.switch_turn()
 
         self.canvas.bind("<Button-1>", lambda event: self.on_click(event))
 
