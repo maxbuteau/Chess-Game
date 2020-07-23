@@ -75,13 +75,21 @@ class BoardGUI(Frame):
             self.canvas.delete(img)
         self.reset_highlights()
         self.display_pieces()
+
         if self.selected_piece.is_pawn:
+            # Check for promotion
             if row_to == 0 or row_to == 7:
                 is_promotion = True
                 self.promote(self.selected_piece)
 
+            # Update en passant possibility
             elif row_to == start_row + 2 or row_to == start_row - 2:
                 self.game.en_passant_possibility = self.selected_piece
+
+        # Reset en passant possibility
+        if self.game.en_passant_possibility is not None and self.selected_piece.color != self.game.en_passant_possibility.color:
+            self.game.en_passant_possibility = None
+
         self.selected_piece = None
         self.king_check_highlights()
         if self.game.get_game_status() != "Ongoing":
@@ -149,8 +157,6 @@ class BoardGUI(Frame):
         bishop_label = Label(image=bishop_image)
         bishop_label.image = bishop_image  # keep a reference so that image is not garbage collected
 
-
-
         queen_button = Button(self.canvas, image=queen_image, command=lambda: self.switch_promoted_pawn(pawn, "Queen"))
         self.canvas.create_window(x1 + 50, y1 + 50, window=queen_button, tags="button")
 
@@ -197,39 +203,50 @@ class BoardGUI(Frame):
         self.canvas.unbind("<Button-1>")
 
     def on_click(self, event):
-        row = int(event.y / TILE_SIZE)
-        col = int(event.x / TILE_SIZE)
-        piece = self.board[row][col]
-        if self.selected_piece is not None and (row, col) in self.game.get_legal_moves(self.selected_piece):
-            # Castling King side
-            if self.selected_piece.is_king and col == self.selected_piece.col + 2:
-                turn = self.selected_piece.color
-                self.move(row, col)
-                # Prevent from switching turns even if move 2 pieces
-                self.game.turn = turn
-                self.selected_piece = self.board[row][col + 1]
-                self.move(row, col - 1)
+        # Check click is on the board
+        if event.y < 8 * TILE_SIZE and event.x < 8 * TILE_SIZE:
+            row = int(event.y / TILE_SIZE)
+            col = int(event.x / TILE_SIZE)
+            piece = self.board[row][col]
+            if self.selected_piece is not None and (row, col) in self.game.get_legal_moves(self.selected_piece):
+                # Castling King side
+                if self.selected_piece.is_king and col == self.selected_piece.col + 2:
+                    turn = self.selected_piece.color
+                    self.move(row, col)
+                    # Prevent from switching turns even if move 2 pieces
+                    self.game.turn = turn
+                    self.selected_piece = self.board[row][col + 1]
+                    self.move(row, col - 1)
 
-            # Castling Queen side
-            elif self.selected_piece.is_king and col == self.selected_piece.col - 2:
-                turn = self.selected_piece.color
-                self.move(row, col)
-                # Prevent from switching turns even if move 2 pieces
-                self.game.turn = turn
-                self.selected_piece = self.board[row][col - 2]
-                self.move(row, col + 1)
+                # Castling Queen side
+                elif self.selected_piece.is_king and col == self.selected_piece.col - 2:
+                    turn = self.selected_piece.color
+                    self.move(row, col)
+                    # Prevent from switching turns even if move 2 pieces
+                    self.game.turn = turn
+                    self.selected_piece = self.board[row][col - 2]
+                    self.move(row, col + 1)
 
-            # Normal move
+                # En passant
+                elif self.selected_piece.is_pawn and col != self.selected_piece.col and self.board[row][col] == 0:
+                    if self.game.turn == "white":
+                        self.board[row + 1][col] = 0
+                    else:
+                        self.board[row - 1][col] = 0
+                    self.move(row, col)
+
+                # Normal move
+                else:
+                    self.move(row, col)
+
             else:
-                self.move(row, col)
-
-        else:
-            self.reset_highlights()
-            if isinstance(piece, Piece) and piece.color == self.game.turn:
-                selected_square = self.get_square(piece.row, piece.col)
-                self.canvas.itemconfig(selected_square, fill="orange")
-                self.show_available_moves(piece)
-                self.selected_piece = piece
+                self.reset_highlights()
+                self.selected_piece = None
+                if isinstance(piece, Piece) and piece.color == self.game.turn:
+                    selected_square = self.get_square(piece.row, piece.col)
+                    self.canvas.itemconfig(selected_square, fill="orange")
+                    self.show_available_moves(piece)
+                    self.selected_piece = piece
 
 
 def start_game():

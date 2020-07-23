@@ -97,19 +97,14 @@ class Board:
         moves = piece.get_valid_moves(self.board)
         already_moved = piece.has_moved
 
-        # #check for en passant
-        # if piece.is_pawn and self.en_passant_possibility is not None and piece.color != self.en_passant_possibility.color:
-        #     print(piece.color)
-        #     print(self.en_passant_possibility.color)
-        #     print("hey")
-        #     if piece.row == self.en_passant_possibility.row:
-        #         print("you")
-        #         if piece.col == self.en_passant_possibility.col + 1 or piece.col == self.en_passant_possibility.col - 1:
-        #             if piece.color == "white":
-        #                 moves.append((self.en_passant_possibility.row - 1, self.en_passant_possibility.col))
-        #             else:
-        #                 moves.append((self.en_passant_possibility.row + 1, self.en_passant_possibility.col))
-        # self.en_passant_possibility = None
+        # check for en passant
+        if piece.is_pawn and self.en_passant_possibility is not None and piece.color != self.en_passant_possibility.color:
+            if piece.row == self.en_passant_possibility.row:
+                if piece.col == self.en_passant_possibility.col + 1 or piece.col == self.en_passant_possibility.col - 1:
+                    if piece.color == "white":
+                        moves.append((self.en_passant_possibility.row - 1, self.en_passant_possibility.col))
+                    else:
+                        moves.append((self.en_passant_possibility.row + 1, self.en_passant_possibility.col))
 
         for move in moves[:]:
             # Check for castling king side
@@ -140,6 +135,7 @@ class Board:
                                         moves.remove(move)
                                         break
 
+            # Save the possible captured piece
             if self.board[move[0]][move[1]] != 0:
                 self.captured_piece = self.board[move[0]][move[1]]
             piece.move(move[0], move[1])
