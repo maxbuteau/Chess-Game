@@ -1,7 +1,9 @@
 # Chess-Game
 
 A simple chess application that I created to familiarize myself with Python. 
-![Image](/screenshots/basic-position.png)
+![Basic Position](/screenshots/basic-position.PNG)
+![Checkmate](/screenshots/checkmate.PNG)
+![Stalemate](/screenshots/stalemate.PNG)
 ## Features
 - GUI created with Tkinter
 - Checkmate and Stalemate detection
